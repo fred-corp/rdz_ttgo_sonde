@@ -62,8 +62,8 @@ extern const char *RXstr[];
 // 01000000 => goto sonde -1
 // 01000001 => goto sonde +1
 
-#define NSondeTypes 7
-enum SondeType { STYPE_DFM, STYPE_RS41, STYPE_RS92, STYPE_M10M20, STYPE_M10, STYPE_M20, STYPE_MP3H };
+#define NSondeTypes 8
+enum SondeType { STYPE_DFM, STYPE_RS41, STYPE_RS92, STYPE_M10M20, STYPE_M10, STYPE_M20, STYPE_MP3H, STYPE_HORUS };
 extern const char *sondeTypeStr[NSondeTypes];
 extern const char *sondeTypeLongStr[NSondeTypes];
 extern const char sondeTypeChar[NSondeTypes];
@@ -181,6 +181,10 @@ struct st_mp3hconfig {
 	int rxbw;
 };
 
+struct st_horusconfig {
+	int agcbw;
+	int rxbw;
+};
 
 struct st_feedinfo {
         bool active;
@@ -281,6 +285,7 @@ typedef struct st_rdzconfig {
 	struct st_dfmconfig dfm;
 	struct st_m10m20config m10m20;
 	struct st_mp3hconfig mp3h;
+	struct st_horusconfig horus;
 	char ephftp[40];
 	// data feed configuration
 	// for now, one feed for each type is enough, but might get extended to more?

@@ -28,6 +28,10 @@
 #include "src/Chasemapper.h"
 #endif
 
+#if FEATURE_HORUS
+//#include "src/Horus.h"
+#endif
+
 #if FEATURE_MQTT
 #include "src/mqtt.h"
 #endif
@@ -66,7 +70,7 @@ WiFiUDP udp;
 WiFiClient client;
 
 /* Sonde.h: enum SondeType { STYPE_DFM,, STYPE_RS41, STYPE_RS92, STYPE_M10M20, STYPE_M10, STYPE_M20, STYPE_MP3H }; */
-const char *sondeTypeStrSH[NSondeTypes] = { "DFM", "RS41", "RS92", "Mxx"/*never sent*/, "M10", "M20", "MRZ" };
+const char *sondeTypeStrSH[NSondeTypes] = { "DFM", "RS41", "RS92", "Mxx"/*never sent*/, "M10", "M20", "MRZ", "HORUS" };
 const char *dfmSubtypeStrSH[16] = { NULL, NULL, NULL, NULL, NULL, NULL,
                                     "DFM06",  // 0x06
                                     "PS15",   // 0x07
@@ -283,6 +287,9 @@ void setupChannelList() {
     else if (space[1] == '3') {
       type = STYPE_MP3H;
     }
+    else if (space[1] == 'H') {
+      type = STYPE_HORUS;
+    }
     else continue;
     int active = space[3] == '+' ? 1 : 0;
     if (space[4] == ' ') {
@@ -320,6 +327,7 @@ const char *createQRGForm() {
   strcat(ptr, "<script>\nvar qrgs = [];\n");
   for (int i = 0; i < sonde.config.maxsonde; i++) {
     SondeInfo *si = &sonde.sondeList[i];
+    Serial.printf("qrgs.push([%d, \"%.3f\", \"%s\", \"%c\"]);\n", si->active, si->freq, si->launchsite, sondeTypeChar[si->type]);
     sprintf(ptr + strlen(ptr), "qrgs.push([%d, \"%.3f\", \"%s\", \"%c\"]);\n", si->active, si->freq, si->launchsite, sondeTypeChar[si->type] );
   }
   strcat(ptr, "</script>\n");
@@ -519,6 +527,12 @@ void addSondeStatus(char *ptr, int i)
     sprintf(ptr + strlen(ptr), "<tr><td>Burst-KT=%d Launch-KT=%d Countdown=%d (vor %ds)</td></tr>\n",
             s->d.burstKT, s->d.launchKT, s->d.countKT, ((uint16_t)s->d.frame - s->d.crefKT));
   }
+  if (s->type == STYPE_HORUS) {
+    // TODO : Adapt for Horus
+    sprintf(ptr + strlen(ptr), "<tr><td>Burst-KT=%d Launch-KT=%d Countdown=%d (vor %ds)</td></tr>\n",
+            s->d.burstKT, s->d.launchKT, s->d.countKT, ((uint16_t)s->d.frame - s->d.crefKT));
+  }
+  
   sprintf(ptr + strlen(ptr), "<tr><td><a target=\"_empty\" href=\"geo:%.6f,%.6f\">GEO-App</a> - ", s->d.lat, s->d.lon);
   sprintf(ptr + strlen(ptr), "<a target=\"_empty\" href=\"https://radiosondy.info/sonde_archive.php?sondenumber=%s\">radiosondy.info</a> - ", s->d.id);
   sprintf(ptr + strlen(ptr), "<a target=\"_empty\" href=\"https://tracker.sondehub.org/%s\">SondeHub Tracker</a> - ", s->d.ser);
@@ -633,6 +647,8 @@ struct st_configitems config_list[] = {
   {"m10m20.rxbw", 0, &sonde.config.m10m20.rxbw},
   {"mp3h.agcbw", 0, &sonde.config.mp3h.agcbw},
   {"mp3h.rxbw", 0, &sonde.config.mp3h.rxbw},
+  {"horus.agcbw", 0, &sonde.config.horus.agcbw},
+  {"horus.rxbw", 0, &sonde.config.horus.rxbw},
   {"ephftp", 39, &sonde.config.ephftp},
   /* APRS settings */
   {"call", 9, sonde.config.call},

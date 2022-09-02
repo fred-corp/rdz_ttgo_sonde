@@ -5,6 +5,7 @@ stypes.set('D', 'DFM');
 stypes.set('M', 'M10/M20');
 //stypes.set('2', 'M10/M20');
 stypes.set('3', 'MP3H');
+stypes.set('H', 'Horus');
 
 /* (no longer) Used by qrg.html in RX_FSK.ino */
 function prep() {

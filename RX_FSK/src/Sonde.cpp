@@ -7,6 +7,7 @@
 #include "DFM.h"
 #include "M10M20.h"
 #include "MP3H.h"
+#include "Horus.h" // Handle Horus sondes ########################################
 #include "SX1278FSK.h"
 #include "Display.h"
 #include <Wire.h>
@@ -21,10 +22,10 @@ const char *evstring[]={"NONE", "KEY1S", "KEY1D", "KEY1M", "KEY1L", "KEY2S", "KE
 const char *RXstr[]={"RX_OK", "RX_TIMEOUT", "RX_ERROR", "RX_UNKNOWN"};
 
 // Dependency to enum SondeType
-const char *sondeTypeStr[NSondeTypes] = { "DFM ", "RS41", "RS92", "Mxx ", "M10 ", "M20 ", "MP3H" };
-const char *sondeTypeLongStr[NSondeTypes] = { "DFM (all)", "RS41", "RS92", "M10/M20", "M10 ", "M20 ", "MP3-H1" };
-const char sondeTypeChar[NSondeTypes] = { 'D', '4', 'R', 'M', 'M', '2', '3' };
-const char *manufacturer_string[]={"Graw", "Vaisala", "Vaisala", "Meteomodem", "Meteomodem", "Meteomodem", "Meteo-Radiy"};
+const char *sondeTypeStr[NSondeTypes] = { "DFM ", "RS41", "RS92", "Mxx ", "M10 ", "M20 ", "MP3H", "Horus" };
+const char *sondeTypeLongStr[NSondeTypes] = { "DFM (all)", "RS41", "RS92", "M10/M20", "M10 ", "M20 ", "MP3-H1", "Horus" };
+const char sondeTypeChar[NSondeTypes] = { 'D', '4', 'R', 'M', 'M', '2', '3', 'H' };
+const char *manufacturer_string[]={"Graw", "Vaisala", "Vaisala", "Meteomodem", "Meteomodem", "Meteomodem", "Meteo-Radiy", "Horus"};
 
 int fingerprintValue[]={ 17, 31, 64, 4, 55, 48, 23, 128+23, 119, 128+119, -1 };
 const char *fingerprintText[]={
@@ -242,6 +243,8 @@ void Sonde::defaultConfig() {
 	config.m10m20.rxbw=12500;
 	config.mp3h.agcbw=12500;
 	config.mp3h.rxbw=12500;
+	config.horus.agcbw=12500;
+	config.horus.rxbw=12500;
 	config.udpfeed.active = 1;
 	config.udpfeed.type = 0;
 	strcpy(config.udpfeed.host, "192.168.42.20");
@@ -441,6 +444,10 @@ void Sonde::setup() {
 	case STYPE_MP3H:
 		mp3h.setup( sondeList[rxtask.currentSonde].freq * 1000000);
 		break;
+	case STYPE_HORUS:
+		horus.setup(sondeList[rxtask.currentSonde].freq * 1000000);
+		// handle HORUS ############################################################################################################################################################################################################################################################
+		break;
 	}
 	// debug
 	int freq = (int)sx1278.getFrequency();
@@ -474,6 +481,12 @@ void Sonde::receive() {
 		break;
 	case STYPE_MP3H:
 		res = mp3h.receive();
+		break;
+	case STYPE_HORUS:
+		res = horus.receive();
+		Serial.print("Got : ");
+		Serial.println(res);
+		// handle HORUS ############################################################################################################################################################################################################################################################
 		break;
 	}
 
@@ -574,6 +587,10 @@ rxloop:
 		break;
 	case STYPE_MP3H:
 		mp3h.waitRXcomplete();
+		break;
+	case STYPE_HORUS:
+		horus.waitRXcomplete();
+		// handle HORUS ############################################################################################################################################################################################################################################################
 		break;
 	}
 	memmove(sonde.si()->rxStat+1, sonde.si()->rxStat, 17);

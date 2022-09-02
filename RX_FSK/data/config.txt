@@ -83,6 +83,8 @@ rs92.rxbw=12500
 rs92.alt2d=480
 dfm.agcbw=20800
 dfm.rxbw=10400
+horus.agcbw=12500
+horus.rxbw=6300
 #-------------------------------#
 # ftp server for RINEX data (for RS92)
 # YYYY/DDD/brdcDDD0.YYn.gz is appended

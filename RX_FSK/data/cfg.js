@@ -33,6 +33,8 @@ var cfgs = [
 [ "m10m20.rxbw", "M10/M20 RX bandwidth"],
 [ "mp3h.agcbw", "MP3H AGC bandwidth"],
 [ "mp3h.rxbw", "MP3H RX bandwidth"],
+[ "horus.agcbw", "Horus AGC bandwidth"],
+[ "horus.rxbw", "Horus RX bandwidth"],
 [ "", "KISS TNC/AXUDP/AXTCP data feed configuration", "https://github.com/dl9rdz/rdz_ttgo_sonde/wiki/Data-feed-configuration"],
 [ "call", "Call"],
 [ "passcode", "Passcode"],
